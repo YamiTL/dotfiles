@@ -68,31 +68,17 @@ else {
 #}
 #catch { Write-Warning $_ }
 
-# # make ~/all-repos/ ~/repos/ and ~/other-repos/ folders
-# Write-Host "`ncreating `\*repos` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
+# # make ~/Code/ folders
+Write-Host "`ncreating `\Code` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
 
-# $allReposFolderExists = Test-Path "C:\Users\$env:Username\all-repos\"
-# $reposFolderExists = Test-Path "C:\Users\$env:Username\repos\"
-# $otherReposFolderExists = Test-Path "C:\Users\$env:Username\other-repos\"
+$codeFolderExists = Test-Path "C:\Users\$env:Username\Code\"
 
-# if (!$allReposFolderExists) {
-#     New-Item -ItemType Directory "C:\Users\$env:Username\all-repos\"
-# }
-# else {
-#     Write-Host "~/all-repos/ folder found. Skipping`n" -ForegroundColor Yellow
-# }
-# if (!$reposFolderExists) {
-#     New-Item -ItemType Directory "C:\Users\$env:Username\repos\"
-# }
-# else {
-#     Write-Host "~/repos/ folder found. Skipping`n" -ForegroundColor Yellow
-# }
-# if (!$otherReposFolderExists) {
-#     New-Item -ItemType Directory "C:\Users\$env:Username\other-repos\"
-# }
-# else {
-#     Write-Host "~/other-repos/ folder found. Skipping`n" -ForegroundColor Yellow
-# }
+if (!$codeFolderExists) {
+    New-Item -ItemType Directory "C:\Users\$env:Username\Code\"
+}
+else {
+    Write-Host "~/Code/ folder found. Skipping`n" -ForegroundColor Yellow
+}
 
 # scoop install
 Write-Host "`nInstalling scoop & apps - "  -ForegroundColor Yellow -NoNewline ; Write-Host "[6-10]" -ForegroundColor Green -BackgroundColor Black
@@ -129,17 +115,17 @@ try {
 }
 catch { Write-Warning $_ }
 
-# # clone `dotfiles`
-# Write-Host "`ncloning `\dotfiles\` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
+# clone `dotfiles`
+Write-Host "`ncloning `\dotfiles\` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
 
-# $dotfilesFolderExists = Test-Path "C:\Users\$env:Username\repos\dotfiles\"
+$dotfilesFolderExists = Test-Path "C:\Users\$env:Username\Code\dotfiles\"
 
-# if (!$dotfilesFolderExists) {
-#     git clone https://github.com/AucaCoyan/dotfiles "$HOME\repos\dotfiles"
-# }
-# else {
-#     Write-Error "~\repos\dotfiles\ folder exists. Stopping excecution.`n" 
-# }
+if (!$dotfilesFolderExists) {
+    git clone https://github.com/YamiTL/dotfiles "$HOME\Code\dotfiles"
+}
+else {
+    Write-Error "~\Code\dotfiles\ folder exists. Stopping excecution.`n" 
+}
 
 # Install glyphed fonts
 $Font = "FiraCode"
@@ -198,24 +184,24 @@ try {
 catch { Write-Warning $_ }
 
 # Set PS profile
-Write-Host "`nApplying Powershell profile - " -ForegroundColor Yellow -NoNewline ; Write-Host "[5-10]" -ForegroundColor Green -BackgroundColor Black
-try {
-    # backup
-    # if (Test-Path $profile) { Rename-Item $profile -NewName Microsoft.PowerShell_profile.ps1.bak }
+# Write-Host "`nApplying Powershell profile - " -ForegroundColor Yellow -NoNewline ; Write-Host "[5-10]" -ForegroundColor Green -BackgroundColor Black
+# try {
+#     # backup
+#     # if (Test-Path $profile) { Rename-Item $profile -NewName Microsoft.PowerShell_profile.ps1.bak }
 
-    $originPath = "$HOME\OneDrive\Documents\PowerShell\"
-    $destinationPath = "$HOME\repos\dotfiles\Windows\PowerShell"
+#     $originPath = "$HOME\OneDrive\Documents\PowerShell\"
+#     $destinationPath = "$HOME\repos\dotfiles\Windows\PowerShell"
 
-    # delete the folder if it exists
-    $LocalStateExits = Test-Path $originPath
-    if ($LocalStateExits) {
-        Remove-Item $originPath -Recurse -Force
-    }
+#     # delete the folder if it exists
+#     $LocalStateExits = Test-Path $originPath
+#     if ($LocalStateExits) {
+#         Remove-Item $originPath -Recurse -Force
+#     }
 
-    # symlink the settings.json
-    New-Item -ItemType Junction -Path $originPath -Target $destinationPath
-}
-catch { Write-Warning $_ }
+#     # symlink the settings.json
+#     New-Item -ItemType Junction -Path $originPath -Target $destinationPath
+# }
+# catch { Write-Warning $_ }
 
 # # Set WT settings.json
 # Write-Host "`nApplying Windows Terminal default settings - " -ForegroundColor Yellow -NoNewline ; Write-Host "[9-10]" -ForegroundColor Green -BackgroundColor Black
@@ -236,7 +222,4 @@ catch { Write-Warning $_ }
 
 # todo:
 # Oh-My-Posh install, add to default prompt, add theme
-# pipx
-# cargo install
 # npm -g install
-
