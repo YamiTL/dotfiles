@@ -115,6 +115,11 @@ try {
 }
 catch { Write-Warning $_ }
 
+# configure `git
+Write-Host "`nconfiguring git" -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
+git config --global user.name "YamiTL"
+git config --global user.email "yamitlemos@gmail.com"
+
 # clone `dotfiles`
 Write-Host "`ncloning `\dotfiles\` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
 
@@ -191,23 +196,6 @@ catch { Write-Warning $_ }
 
 #     $originPath = "$HOME\OneDrive\Documents\PowerShell\"
 #     $destinationPath = "$HOME\repos\dotfiles\Windows\PowerShell"
-
-#     # delete the folder if it exists
-#     $LocalStateExits = Test-Path $originPath
-#     if ($LocalStateExits) {
-#         Remove-Item $originPath -Recurse -Force
-#     }
-
-#     # symlink the settings.json
-#     New-Item -ItemType Junction -Path $originPath -Target $destinationPath
-# }
-# catch { Write-Warning $_ }
-
-# # Set WT settings.json
-# Write-Host "`nApplying Windows Terminal default settings - " -ForegroundColor Yellow -NoNewline ; Write-Host "[9-10]" -ForegroundColor Green -BackgroundColor Black
-# try {
-#     $originPath = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
-#     $destinationPath = "$HOME\repos\dotfiles\Windows\windows-terminal"
 
 #     # delete the folder if it exists
 #     $LocalStateExits = Test-Path $originPath
