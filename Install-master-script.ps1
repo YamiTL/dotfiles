@@ -54,20 +54,6 @@ else {
     Write-Host "pwsh.exe found. Skipping`n" -ForegroundColor Yellow
 }
 
-
-# Install Windows Terminal
-# Write-Host "`nInstalling Windows Terminal - " -ForegroundColor Yellow -NoNewline ; Write-Host "[3-10]" -ForegroundColor Green -BackgroundColor Black
-# $hasWindowsTerminal = Get-AppPackage -Name "Microsoft.WindowsTerminal"
-# try {
-#     if (!$env:WT_SESSION -eq $true -or !$hasWindowsTerminal) {
-#         winget install --id=Microsoft.WindowsTerminal -e # --accept-package-agreements --accept-source-agreements doesnt work on PS 5.0
-#     }
-#    else {
-#       Write-Host "Windows Terminal found. Skipping`n" -ForegroundColor Yellow
-#    }
-#}
-#catch { Write-Warning $_ }
-
 # # make ~/Code/ folders
 Write-Host "`ncreating `\Code` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
 
@@ -107,7 +93,7 @@ try {
     scoop install everything googlechrome jpegview-fork
     scoop install keepassxc nu oh-my-posh obs-studio peazip 
     scoop install powertoys ripgrep rustdesk sumatrapdf 
-    scoop install telegram vlc vscode windirstat windows-terminal
+    scoop install telegram vlc vscode windirstat
 
     # programming languages
     # scoop install deno fnm python rustup
@@ -188,25 +174,25 @@ try {
 }
 catch { Write-Warning $_ }
 
-# Set PS profile
-# Write-Host "`nApplying Powershell profile - " -ForegroundColor Yellow -NoNewline ; Write-Host "[5-10]" -ForegroundColor Green -BackgroundColor Black
-# try {
-#     # backup
-#     # if (Test-Path $profile) { Rename-Item $profile -NewName Microsoft.PowerShell_profile.ps1.bak }
+Set PS profile
+Write-Host "`nApplying Powershell profile - " -ForegroundColor Yellow -NoNewline ; Write-Host "[5-10]" -ForegroundColor Green -BackgroundColor Black
+try {
+    # backup
+    if (Test-Path $profile) { Rename-Item $profile -NewName Microsoft.PowerShell_profile.ps1.bak }
 
-#     $originPath = "$HOME\OneDrive\Documents\PowerShell\"
-#     $destinationPath = "$HOME\repos\dotfiles\Windows\PowerShell"
+    $originPath = "$HOME\OneDrive\Documents\PowerShell\"
+    $destinationPath = "$HOME\repos\dotfiles\Windows\PowerShell"
 
-#     # delete the folder if it exists
-#     $LocalStateExits = Test-Path $originPath
-#     if ($LocalStateExits) {
-#         Remove-Item $originPath -Recurse -Force
-#     }
+    # delete the folder if it exists
+    $LocalStateExits = Test-Path $originPath
+    if ($LocalStateExits) {
+        Remove-Item $originPath -Recurse -Force
+    }
 
-#     # symlink the settings.json
-#     New-Item -ItemType Junction -Path $originPath -Target $destinationPath
-# }
-# catch { Write-Warning $_ }
+    # symlink the settings.json
+    New-Item -ItemType Junction -Path $originPath -Target $destinationPath
+}
+catch { Write-Warning $_ }
 
 # todo:
 # Oh-My-Posh install, add to default prompt, add theme
