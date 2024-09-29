@@ -31,22 +31,26 @@ else {
 Clear-Host
 
 # Check for winget and install
-Write-Host "`nInstalling winget - " -ForegroundColor Yellow -NoNewline; Write-Host "[1-10]" -ForegroundColor Green -BackgroundColor Black
-$hasPackageManager = Get-AppPackage -name "Microsoft.DesktopAppInstaller"
-$hasWingetexe = Test-Path "C:\Users\$env:Username\AppData\Local\Microsoft\WindowsApps\winget.exe"
-if (!$hasPackageManager -or !$hasWingetexe) {
-    $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $releases = Invoke-RestMethod -uri "$($releases_url)"
-    $latestRelease = $releases.assets | Where-Object { $_.browser_download_url.EndsWith("msixbundle") } | Select-Object -First 1
-    Add-AppxPackage -Path $latestRelease.browser_download_url
-}
-else {
-    Write-Host "Winget found. Skipping`n" -ForegroundColor Yellow
-}
+Write-Host "`nInstalling winget - " -ForegroundColor Yellow -NoNewline; Write-Host "[1-7]" -ForegroundColor Green -BackgroundColor Black
+# $hasPackageManager = Get-AppPackage -name "Microsoft.DesktopAppInstaller"
+# $hasWingetexe = Test-Path "C:\Users\$env:Username\AppData\Local\Microsoft\WindowsApps\winget.exe"
+# if (!$hasPackageManager -or !$hasWingetexe) {
+$releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$releases = Invoke-RestMethod -uri "$($releases_url)"
+$latestRelease = $releases.assets | Where-Object { $_.browser_download_url.EndsWith("msixbundle") } | Select-Object -First 1
+Add-AppxPackage -Path $latestRelease.browser_download_url
+# }
+# else {
+#     Write-Host "Winget found. Skipping`n" -ForegroundColor Yellow
+# }
+
+# Update Winget sources
+# unable to to this in user mode. Open a terminal with admin privileges and update the sources
+# winget source reset --force
 
 # Install PS7 
-Write-Host "Installing Powershell 7 - " -ForegroundColor Yellow -NoNewline; Write-Host "[2-10]" -ForegroundColor Green -BackgroundColor Black
+Write-Host "Installing Powershell 7 - " -ForegroundColor Yellow -NoNewline; Write-Host "[2-7]" -ForegroundColor Green -BackgroundColor Black
 If (!(Test-Path "C:\Program Files\PowerShell\7\pwsh.exe")) {
     winget install --id Microsoft.Powershell --source winget #  --accept-package-agreements --accept-source-agreements doesnt work on PS 5.0
 }
@@ -55,7 +59,7 @@ else {
 }
 
 # # make ~/Code/ folders
-Write-Host "`ncreating `\Code` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
+Write-Host "`ncreating `\Code` - " -ForegroundColor Yellow -NoNewline; Write-Host "[3-7]" -ForegroundColor Green -BackgroundColor Black
 
 $codeFolderExists = Test-Path "C:\Users\$env:Username\Code\"
 
@@ -67,7 +71,7 @@ else {
 }
 
 # scoop install
-Write-Host "`nInstalling scoop & apps - "  -ForegroundColor Yellow -NoNewline ; Write-Host "[6-10]" -ForegroundColor Green -BackgroundColor Black
+Write-Host "`nInstalling scoop & apps - "  -ForegroundColor Yellow -NoNewline ; Write-Host "[4-7]" -ForegroundColor Green -BackgroundColor Black
 try {
     $scoopIsInstalled = [Boolean](Get-Command 'scoop' -ErrorAction SilentlyContinue)
     if (!$scoopIsInstalled) {
@@ -88,26 +92,25 @@ try {
     scoop install git
     scoop bucket add extras
 
+    # dependency for keepassxc and some other programs
+    scoop install extras/vcredist2022
+    
     # core
-    scoop install 7zip autohotkey calibre czkawka-gui delta discord
-    scoop install everything googlechrome jpegview-fork
-    scoop install keepassxc nu oh-my-posh obs-studio peazip 
-    scoop install powertoys ripgrep rustdesk sumatrapdf 
+    scoop install autohotkey calibre czkawka-gui delta discord
+    scoop install everything main/gh googlechrome jpegview-fork
+    scoop install keepassxc main/nu oh-my-posh obs-studio obsidian peazip 
+    scoop install powertoys ripgrep slack
     scoop install telegram vlc vscode windirstat
-
-    # programming languages
-    # scoop install deno fnm python rustup
-
 }
 catch { Write-Warning $_ }
 
 # configure `git
-Write-Host "`nconfiguring git" -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
+Write-Host "`nconfiguring git" -ForegroundColor Yellow -NoNewline; Write-Host "[5-7]" -ForegroundColor Green -BackgroundColor Black
 git config --global user.name "YamiTL"
 git config --global user.email "yamitlemos@gmail.com"
 
 # clone `dotfiles`
-Write-Host "`ncloning `\dotfiles\` - " -ForegroundColor Yellow -NoNewline; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
+Write-Host "`ncloning `\dotfiles\` - " -ForegroundColor Yellow -NoNewline; Write-Host "[6-7]" -ForegroundColor Green -BackgroundColor Black
 
 $dotfilesFolderExists = Test-Path "C:\Users\$env:Username\Code\dotfiles\"
 
@@ -120,7 +123,7 @@ else {
 
 # Install glyphed fonts
 $Font = "FiraCode"
-Write-Host "`nInstalling glyphed fonts for OMP [$Font] - " -ForegroundColor Yellow -NoNewline ; Write-Host "[4-10]" -ForegroundColor Green -BackgroundColor Black
+Write-Host "`nInstalling glyphed fonts for OMP [$Font] - " -ForegroundColor Yellow -NoNewline ; Write-Host "[7-7]" -ForegroundColor Green -BackgroundColor Black
 try {
     $fontsToInstallDirectory = "$Font-temp"
 
@@ -174,14 +177,14 @@ try {
 }
 catch { Write-Warning $_ }
 
-Set PS profile
-Write-Host "`nApplying Powershell profile - " -ForegroundColor Yellow -NoNewline ; Write-Host "[5-10]" -ForegroundColor Green -BackgroundColor Black
+# Set PS profile
+Write-Host "`nApplying Powershell profile - " -ForegroundColor Yellow -NoNewline ; Write-Host "[8-10]" -ForegroundColor Green -BackgroundColor Black
 try {
     # backup
-    if (Test-Path $profile) { Rename-Item $profile -NewName Microsoft.PowerShell_profile.ps1.bak }
+    # if (Test-Path $profile) { Rename-Item $profile -NewName Microsoft.PowerShell_profile.ps1.bak }
 
-    $originPath = "$HOME\OneDrive\Documents\PowerShell\"
-    $destinationPath = "$HOME\repos\dotfiles\Windows\PowerShell"
+    $originPath = "$HOME\Documents\PowerShell\"
+    $destinationPath = "$HOME\Code\dotfiles\Windows\PowerShell"
 
     # delete the folder if it exists
     $LocalStateExits = Test-Path $originPath
@@ -194,6 +197,23 @@ try {
 }
 catch { Write-Warning $_ }
 
-# todo:
-# Oh-My-Posh install, add to default prompt, add theme
-# npm -g install
+
+# Set nushell symlink
+Write-Host "`nApplying nushell settings - " -ForegroundColor Yellow -NoNewline ; Write-Host "[10-10]" -ForegroundColor Green -BackgroundColor Black
+try {
+    $originPath = "$HOME\AppData\Roaming\nushell"
+    $destinationPath = "$HOME\Code\dotfiles\nushell"
+
+    # delete the folder if it exists
+    $LocalStateExits = Test-Path $originPath
+    if ($LocalStateExits) {
+        Remove-Item $originPath -Recurse -Force
+    }
+
+    # symlink the settings.json
+    New-Item -ItemType Junction -Path $originPath -Target $destinationPath
+}
+catch { Write-Warning $_ }
+
+
+Write-Host "`nDone!" -ForegroundColor Green
