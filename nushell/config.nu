@@ -903,3 +903,6 @@ if $nu.os-info.name == "linux" {
 } else if $nu.os-info.name == "windows" {
     source ~/Code/dotfiles/nushell/oh-my-posh-windows.nu
 }
+
+# import the module scripts
+use ~/Code/dotfiles/nushell/scripts/ *
