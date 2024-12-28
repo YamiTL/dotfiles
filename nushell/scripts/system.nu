@@ -41,8 +41,6 @@ export def "clean" [] {
     print "cleaning npm cache"
     npm cache clean --force
 
-    print "cleaning bun cache"
-    bun pm cache rm -g
     # TODO: This removes any stopped container
     # so if you stopped your db just for some reason,
     # it throws away the data
@@ -76,14 +74,8 @@ export def "update" [] {
     # cross platform commands
     rustup update
 
-    print "💫 bun update..."
-    bun upgrade
-
     print "💫 uv update..."
     uv self update
-
-    print "💫 rye update..."
-    rye self update
 
     print "💫 cargo-update..."
     cargo install-update --all
