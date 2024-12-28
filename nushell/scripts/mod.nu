@@ -1,4 +1,6 @@
 
+export use system.nu
+
 # choses a folder from fzf list and cd's into it
 export def --env f [] {
     # Usage: fd.exe [OPTIONS] [pattern] [path]...
