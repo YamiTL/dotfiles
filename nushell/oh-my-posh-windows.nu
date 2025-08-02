@@ -1,66 +1,30 @@
-# make sure we have the right prompt render correctly
-if ($env.config? | is-not-empty) {
-    $env.config = ($env.config | upsert render_right_prompt_on_last_line true)
-}
+export-env {
+    let _omp_executable: string = (echo $"($env.home)/scoop/apps/oh-my-posh/current/oh-my-posh.exe")
+    $env.POWERLINE_COMMAND = 'oh-my-posh'
+    $env.POSH_THEME = ([$env.home, "\\Code\\dotfiles\\nushell\\oh-my-posh.config.json"] | str join)
+    $env.PROMPT_INDICATOR = ""
+    $env.POSH_PID = (random uuid)
+    # By default displays the right prompt on the first line
+    # making it annoying when you have a multiline prompt
+    # making the behavior different compared to other shells
+    $env.PROMPT_COMMAND_RIGHT = {|| ''}
+    $env.NU_VERSION = (version | get version)
 
-$env.POWERLINE_COMMAND = 'oh-my-posh'
-$env.POSH_THEME = (echo ([$nu.home-path, "\\Code\\dotfiles\\nushell\\oh-my-posh.config.json"] | str join))
-$env.PROMPT_INDICATOR = ""
-$env.POSH_SESSION_ID = (echo "1d33d99d-4326-4264-a9f3-be0d75acc70c")
-$env.POSH_SHELL_VERSION = (version | get version)
+    # PROMPTS
+    $env.PROMPT_MULTILINE_INDICATOR = (^(
+        [$env.home, "\\scoop\\apps\\oh-my-posh\\current\\oh-my-posh.exe"]
+        | str join
+        ) print secondary $"--config=($env.POSH_THEME)" --shell=nu $"--shell-version=($env.NU_VERSION)")
 
-let _omp_executable: string = (echo "C:/Users/shia_/scoop/apps/oh-my-posh/current/oh-my-posh.exe")
+    $env.PROMPT_COMMAND = { ||
+        # We have to do this because the initial value of `$env.CMD_DURATION_MS` is always `0823`,
+        # which is an official setting.
+        # See https://github.com/nushell/nushell/discussions/6402#discussioncomment-3466687.
+        let cmd_duration = if $env.CMD_DURATION_MS == "0823" { 0 } else { $env.CMD_DURATION_MS }
 
-# PROMPTS
-
-def --wrapped _omp_get_prompt [
-    type: string,
-    ...args: string
-] {
-    mut execution_time = -1
-    mut no_status = true
-    # We have to do this because the initial value of `$env.CMD_DURATION_MS` is always `0823`, which is an official setting.
-    # See https://github.com/nushell/nushell/discussions/6402#discussioncomment-3466687.
-    if $env.CMD_DURATION_MS != '0823' {
-        $execution_time = $env.CMD_DURATION_MS
-        $no_status = false
+        let width = ((term size).columns | into string)
+        ^(
+    [$env.home, "\\scoop\\apps\\oh-my-posh\\current\\oh-my-posh.exe"]
+    | str join) print primary $"--config=($env.POSH_THEME)" --shell=nu $"--shell-version=($env.NU_VERSION)" $"--execution-time=($cmd_duration)" $"--terminal-width=($width)"
     }
-
-    (
-        ^$_omp_executable print $type
-            --save-cache
-            --shell=nu
-            $"--shell-version=($env.POSH_SHELL_VERSION)"
-            $"--status=($env.LAST_EXIT_CODE)"
-            $"--no-status=($no_status)"
-            $"--execution-time=($execution_time)"
-            $"--terminal-width=((term size).columns)"
-            ...$args
-    )
 }
-
-$env.PROMPT_MULTILINE_INDICATOR = (
-    ^$_omp_executable print secondary
-        --shell=nu
-        $"--shell-version=($env.POSH_SHELL_VERSION)"
-)
-
-$env.PROMPT_COMMAND = {||
-    # hack to set the cursor line to 1 when the user clears the screen
-    # this obviously isn't bulletproof, but it's a start
-    mut clear = false
-    if $nu.history-enabled {
-        $clear = (history | is-empty) or ((history | last 1 | get 0.command) == "clear")
-    }
-
-    if ($env.SET_POSHCONTEXT? | is-not-empty) {
-        do --env $env.SET_POSHCONTEXT
-    }
-
-    _omp_get_prompt primary $"--cleared=($clear)"
-}
-
-$env.PROMPT_COMMAND_RIGHT = {|| _omp_get_prompt right }
-
-$env.TRANSIENT_PROMPT_COMMAND = {|| _omp_get_prompt transient }
-^$_omp_executable notice
